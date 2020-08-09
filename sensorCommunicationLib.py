@@ -2,6 +2,7 @@ import time
 import board
 import busio
 import adafruit_tmp006
+import RPi.GPIO as GPIO
 
 #Code for sensors communication
 
@@ -73,6 +74,35 @@ def get_temp_ncontact():
 
 
 #Code to REad from ELEGOO HC-SR04: Alex
+def get_distance():
+  GPIO.setmode(GPIO.BCM)
+
+  TRIG = 23 # output pin
+  ECHO = 24 # input pin
+
+  GPIO.setup(TRIG, GPIO.OUT)
+  GPIO.setup(ECHO, GPIO.IN)
+
+  GPIO.output(TRIG, False)
+  time.sleep(1) # Give sensor a second to settle
+
+  GPIO.output(TRIG, True)
+  time.sleep(0.00001)
+  GPIO.output(TRIG, False)
+
+  while GPIO.input(ECHO) == 0:
+    pulse_start = time.time()
+
+  while GPIO.input(ECHO) == 1:
+    pulse_end = time.time()
+
+  pulse_duration = pulse_end - pulse_start
+  
+  # Assume speed of sound to be 343 m/s
+  # Distance here is measured in cm
+  distance = (pulse_duration * 17150).round(3)
+  
+  return distance
 
 
 
